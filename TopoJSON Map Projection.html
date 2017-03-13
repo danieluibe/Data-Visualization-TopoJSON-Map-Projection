@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="http://d3js.org/topojson.v2.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+	<style>
+			.center{text-anchor: middle; dominant-baseline: hanging;}
+			svg {border: solid black 1px;}
+			svg line{stroke:black;}
+		</style>
+</head>
+
+<body>
+	<h2>Data visualization project</h2>
+	<h3>TopoJSON Map Projection</h3>	
+	<p>
+        Yuxiang Peng
+        <p class="p">
+            Map yourself! Find the longitude and latitude coordinates of three
+   places that have meaning to you. Two must be within 30 miles of each other, the
+    third must be at least 1000 miles away. Use d3 to create a map of the world,
+    the US, or any relevant continent or region (10 pts). Use the JSON geographic
+     files included with the class notes on GitHub or find your own. Select a
+     projection for the map. Consult the d3 documentation for options.
+     If you choose, you may want to use one of the projections from the
+     d3-geo-projection package, which will require an additional javascript
+     library file, available at https://github.com/d3/d3- geo-projection/.
+     Place colored circles on the map in the locations you selected. Add text
+     labels describing the meaning of these places. For each location connect
+     the circle to the text with a line. (10 pts)
+        </p>
+        <div id="p4"></div>
+        <script>
+        //part of codes from 021517 Notes
+    var svg6 = d3.select("#p4").append("svg")
+    .attr("width",1200)
+    .attr("height",1200)
+    var rawData;
+    var countries;
+    var projection = d3.geoMercator().scale(75);
+    var pathGenerator = d3.geoPath().projection(projection);
+    var points = [[-76.5, 42], [116, 40], [111.0, 27]];
+    d3.json("world-50m.json", function (error, data) {
+        rawData = data;
+        countries = topojson.feature(rawData, rawData.objects.countries);
+        showMap();
+        svg6.append("text")
+        .text("Undergraduated university")
+        .attr("x", "900")
+        .attr("y", "450")
+        .style("fill","red")
+        svg6.append("line")
+        .attr("x1","986")
+        .attr("x2","986")
+        .attr("y1","430")
+        .attr("y2","450")
+        .style("stroke","purple")
+        .style("stroke-width","2")
+        svg6.append("text")
+        .text("My hometown")
+        .attr("x", "930")
+        .attr("y", "500")
+        .style("fill","red")
+        svg6.append("line")
+        .attr("x1","970")
+        .attr("x2","970")
+        .attr("y1","482")
+        .attr("y2","495")
+        .style("stroke","purple")
+        .style("stroke-width","2")
+        svg6.append("text")
+        .text("Graduated University")
+        .attr("x", "278")
+        .attr("y", "450")
+        .style("fill","red")
+        svg6.append("line")
+        .attr("x1","345")
+        .attr("x2","345")
+        .attr("y1","423")
+        .attr("y2","440")
+        .style("stroke","purple")
+        .style("stroke-width","2")
+    });
+
+    
+
+    function showMap() {
+    
+    projection.fitExtent([[0,0], [svg6.attr("width"), svg6.attr("height")]], countries);
+    pathGenerator = d3.geoPath().projection(projection);
+    
+    var paths = svg6.selectAll("path.country").data(countries.features);
+    paths.enter().append("path").attr("class", "country")
+    .merge(paths) 
+    .transition().duration(1000)
+    .attr("d", function (country) {
+        return pathGenerator(country);
+    });
+    
+    var circles = svg6.selectAll("circle").data(points);
+    
+    circles.exit().remove();
+    
+    circles.enter().append("circle").attr("r", 3)
+    .merge(circles)
+    .attr("cx", function(d) { return projection(d)[0]; })
+    .attr("cy", function(d) { return projection(d)[1]; })
+    .attr("r","3")
+    .style("fill","red")
+    }
+
+    
+        </script>
+    </p>
+</body>
+</html>
